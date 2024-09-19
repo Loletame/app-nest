@@ -11,6 +11,7 @@ import { envs } from 'src/configs';
 
 @Module({
   imports: [
+     //para que cree la tabla en la bd
     TypeOrmModule.forFeature([Usuarios]),
     JwtModule.register({
       secret: envs.jwt,
