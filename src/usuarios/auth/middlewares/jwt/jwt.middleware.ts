@@ -13,7 +13,7 @@ export class JwtMiddleware implements NestMiddleware {
     try {
       //* obtenemos el token desde el cabezal (headers) de la peticion, y lo separamos de "Bearer"
       const tokenArray: string[] = req.headers['authorization'].split(' ');
-      
+
       const decodedToken = await this.authService.verifyJwt(tokenArray[1]);
 
       if (decodedToken) {

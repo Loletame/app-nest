@@ -20,8 +20,8 @@ import { envs } from 'src/configs';
     }),
     MulterModule.register({
       dest: './uploads',
-      fileFilter: saveImagesToStorage('avatar').fileFilter,
-      storage: saveImagesToStorage('avatar').storage,
+      fileFilter: saveImagesToStorage('avatars').fileFilter,
+      storage: saveImagesToStorage('avatars').storage,
     })
   ],
 

@@ -41,12 +41,14 @@ export class UsuariosController {
 
 
     ) {
+        console.log(files);
+        // res.status(HttpStatus.OK);
         const result = await this.service.updateUser(id, user, files); [
             {
                 fieldname: 'file',
-                originalname: 'test.jpg',
+                originalname: 'test.png',
                 encoding: '7bit',
-                mimetype: 'image/jpg',
+                mimetype: 'image/png',
             }
         ]
 

@@ -18,5 +18,5 @@ export  class UsuarioDto {
 
     @IsOptional()
     @IsBoolean()
-    isActive?: boolean = true;
+    isActive: boolean = true;
 }

@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { Socket } from 'socket.io';
-import { Payload } from 'src/configs';
+import { Payload } from 'src/common';
 
 @Injectable()
 export class SocketService {

@@ -11,6 +11,8 @@ export class Usuarios {
     password: string;
     @Column({ type: 'varchar', unique: true, length: 255, nullable: false })
     email: string;
+    @Column({ type: 'bool', default: true })
+    isActive: boolean;
     @Column({ type: 'varchar', length: 255, nullable: false })
     avatar: string;
 

@@ -4,7 +4,7 @@ import fs = require('fs');
 
 import path = require ('path')
 
-const validMimeType = [ 'image/png' , 'image/jpg' , 'image/jpeg']
+const validMimeType = [ 'image/png' , 'image/jpg' , 'image/jpeg'];
 
 export const saveImagesToStorage = (destination) => {
     return {
