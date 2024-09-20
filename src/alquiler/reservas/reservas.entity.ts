@@ -1,5 +1,5 @@
 import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
-import { Usuarios } from "src/usuarios/usuarios.entity";
+import { Usuario } from "src/usuarios/usuarios.entity";
 import { Departamento } from "../departamentos/departamentos.entity";
 
 @Entity('reservas')
@@ -14,9 +14,9 @@ export class Reserva {
    salida: Date
 
    //usuario que reserva
-   @ManyToOne(() => Usuarios, usuario => usuario.id)
+   @ManyToOne(() => Usuario, usuario => usuario.id)
    @JoinColumn({name: 'usuarioId'})
-   usuario: Usuarios;
+   usuario: Usuario;
    
    //a cual parcela
    @ManyToOne(() => Departamento, departamento => departamento.id)
