@@ -8,7 +8,7 @@ import { JwtMiddleware } from './usuarios/auth/middlewares/jwt/jwt.middleware';
 import { dbConfig } from './configs/database-config';
 import { SocketModule } from './socket/socket.module';
 import { DepartamentosModule } from './alquiler/departamentos/departamentos.module';
-import { IngresosEgresosModule } from './alquiler/ingresos-egresos/ingresos-egresos.module';
+import { IngresosModule } from './alquiler/ingresos/ingresos.module';
 import { ParcelasModule } from './alquiler/parcelas/parcelas.module';
 import { ReservasModule } from './alquiler/reservas/reservas.module';
 
@@ -19,7 +19,7 @@ import { ReservasModule } from './alquiler/reservas/reservas.module';
     UsuariosModule,
     SocketModule,
     DepartamentosModule,
-    IngresosEgresosModule,
+    IngresosModule,
     ParcelasModule,
     ReservasModule
   ],
