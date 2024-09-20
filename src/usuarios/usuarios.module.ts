@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { UsuariosController } from './usuarios.controller';
 import { UsuariosService } from './usuarios.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { Usuarios } from './usuarios.entity';
+import { Usuario } from './usuarios.entity';
 import { AuthService } from './auth/auth.service';
 import { JwtModule } from '@nestjs/jwt';
 import { MulterModule } from '@nestjs/platform-express';
@@ -12,7 +12,7 @@ import { envs } from 'src/configs';
 @Module({
   imports: [
      //para que cree la tabla en la bd
-    TypeOrmModule.forFeature([Usuarios]),
+    TypeOrmModule.forFeature([Usuario]),
     JwtModule.register({
       secret: envs.jwt,
       signOptions:{

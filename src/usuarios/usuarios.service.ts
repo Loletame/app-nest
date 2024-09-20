@@ -1,7 +1,7 @@
 import { HttpException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { QueryFailedError, Repository } from 'typeorm';
-import { Usuarios } from './usuarios.entity';
+import { Usuario } from './usuarios.entity';
 import { UsuarioDto } from './usuarios.dto';
 import { AuthService } from './auth/auth.service';
 import { PaginationQueryDto } from 'src/common/paginator/pagination.dto';
@@ -10,7 +10,7 @@ import { PaginationQueryDto } from 'src/common/paginator/pagination.dto';
 @Injectable()
 export class UsuariosService {
     constructor(
-        @InjectRepository(Usuarios) private readonly repo: Repository<UsuarioDto>,
+        @InjectRepository(Usuario) private readonly repo: Repository<UsuarioDto>,
         private readonly authService: AuthService
     ) { }
 
