@@ -1,4 +1,18 @@
-import { Controller } from '@nestjs/common';
+import { Controller, Get, Param, Query } from '@nestjs/common';
+import { ParcelasService } from './parcelas.service';
+import { PaginationQueryDto } from 'src/common';
 
 @Controller('parcelas')
-export class ParcelasController {}
+export class ParcelasController {
+    constructor(private readonly service: ParcelasService) {}
+
+    @Get()
+    async getAll(@Query() paginationQuery: PaginationQueryDto) {
+        return await this.service.getAll(paginationQuery);
+    }
+    @Get(':id')
+    async getOne(@Param('id') id: number) {
+        return await this.service.getOne(id);
+    }
+    
+}
