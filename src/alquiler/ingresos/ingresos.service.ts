@@ -59,5 +59,7 @@ export class IngresosService {
                 throw new HttpException(`${err.name} ${err.driverError}`, 404);
             throw new HttpException(err.message, err.status);
         }
-    }
+    } 
+
+    
 }
