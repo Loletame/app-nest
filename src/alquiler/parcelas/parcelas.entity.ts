@@ -15,4 +15,7 @@ export class Parcela {
     @Column({ type: 'integer', default:0 })
     precio: number;
 
+    @Column ({type: 'boolean', default:false })
+    ocupada: boolean;
+
 }

@@ -9,11 +9,11 @@ export class IngresosController {
 
         @Post('entrada')
         async saveIngreso(
-            @Body() ingreso: IngresoDto,
-            usuarioId: number,
-            parcelaId: number
+            @Body('usuarioId')  usuarioId: number,
+            @Body('parcelaId')  parcelaId: number
+            
         ){
-            const result = await this.service.saveIngreso(usuarioId, parcelaId, ingreso);
+            const result = await this.service.saveIngreso(usuarioId, parcelaId);
             return result;
     }
     @Get()

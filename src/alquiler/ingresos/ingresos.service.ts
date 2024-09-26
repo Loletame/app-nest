@@ -1,4 +1,4 @@
-import { HttpException, Injectable, NotFoundException } from '@nestjs/common';
+import { Get, HttpException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { QueryFailedError, Repository } from 'typeorm';
 import { Ingreso } from './ingresos.entity';
@@ -8,6 +8,7 @@ import { ParcelaDto } from '../parcelas/parcelas.dto';
 import { Usuario } from 'src/usuarios/usuarios.entity';
 import { UsuarioDto } from 'src/usuarios/usuarios.dto';
 import { PaginationQueryDto } from 'src/common';
+import { ParcelasService } from '../parcelas/parcelas.service';
 
 @Injectable()
 export class IngresosService {
@@ -16,6 +17,7 @@ export class IngresosService {
         private readonly repo: Repository<IngresoDto>,
         @InjectRepository(Parcela)
         private readonly parcela: Repository<ParcelaDto>,
+        private readonly parcelaS: ParcelasService,
         @InjectRepository(Usuario)
         private readonly usuario: Repository<UsuarioDto>
     ) { }
@@ -23,16 +25,34 @@ export class IngresosService {
     async saveIngreso(
         usuarioId: number,
         parcelaId: number,
-        ingreso: IngresoDto
-    ) {
-        try {
-            const usuario = await this.usuario.find({ where: { id: usuarioId } })
-            if (!usuario) throw new NotFoundException('usuario no encontrado')
-            const parcela = await this.parcela.find({ where: { id: parcelaId } })
-            if (!parcela) throw new NotFoundException('parcela no encontrado')
 
-            const result = await this.repo.save(ingreso)
-            return result
+    ): Promise<IngresoDto> {
+        try {
+
+            const usuarioF = await this.usuario.findOne({ where: { id: usuarioId } })
+            if (!usuarioF) throw new NotFoundException('usuario no encontrado')
+            const parcelaF = await this.parcela.findOne({ where: { id: parcelaId } })
+            if (!parcelaF) throw new NotFoundException('parcela no encontrado')
+            if (parcelaF.ocupada) throw new NotFoundException(`parcela ${parcelaId}en uso`,)
+
+            const ingreso = this.repo.create({
+                //carga usuario
+                usuario: usuarioF,
+                //carga parcela
+                parcela: parcelaF,
+                //carga date actual en ingreso
+                entrada: new Date(),
+                salida: null,
+            })
+            //
+            if (ingreso) this.parcelaS.update(parcelaId)
+            return this.repo.save(ingreso)
+
+
+
+
+
+
         } catch (err) {
             console.error(err)
             if (err instanceof QueryFailedError)
@@ -59,7 +79,5 @@ export class IngresosService {
                 throw new HttpException(`${err.name} ${err.driverError}`, 404);
             throw new HttpException(err.message, err.status);
         }
-    } 
-
-    
+    }
 }
