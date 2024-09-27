@@ -12,12 +12,29 @@ export class ParcelasService {
 
     ) { }
 
-    async update(id:number) {
+    async ocupar(id:number) {
 
         try {
           const parcela = await this.repo.findOne({where: {id}});
           if (!parcela) throw new NotFoundException(`No encontramos ninguna parcela con id ${id}`)
           await this.repo.update(parcela, {ocupada: true});
+          return parcela;
+          
+  
+        }catch (err) {
+          console.error(err);
+          if (err instanceof QueryFailedError)
+            throw new HttpException(`${err.name} ${err.driverError}`, 404);
+          throw new HttpException(err.message, err.status);
+        }
+      }
+
+      async desocupar(id:number) {
+
+        try {
+          const parcela = await this.repo.findOne({where: {id}});
+          if (!parcela) throw new NotFoundException('no encontramos ninguna parcela con ese id')
+          await this.repo.update(parcela, {ocupada: false} );
           return parcela;
           
   

@@ -33,7 +33,7 @@ export class IngresosService {
             if (!usuarioF) throw new NotFoundException('usuario no encontrado')
             const parcelaF = await this.parcela.findOne({ where: { id: parcelaId } })
             if (!parcelaF) throw new NotFoundException('parcela no encontrado')
-            if (parcelaF.ocupada) throw new NotFoundException(`parcela ${parcelaId}en uso`,)
+            if (parcelaF.ocupada) throw new NotFoundException(`parcela ${parcelaId} en uso`,)
 
             const ingreso = this.repo.create({
                 //carga usuario
@@ -45,7 +45,7 @@ export class IngresosService {
                 salida: null,
             })
             //
-            if (ingreso) this.parcelaS.update(parcelaId)
+            if (ingreso) this.parcelaS.ocupar(parcelaId)
             return this.repo.save(ingreso)
 
 
@@ -60,6 +60,58 @@ export class IngresosService {
             throw new HttpException(err.message, err.status)
         }
     }
+
+    async saveEgreso(
+        parcelaId: number,
+        usuarioId: number,
+        ingresoId: number
+    ): Promise<IngresoDto> {
+
+        const parcelaF = await this.parcela.findOne({ where: { id: parcelaId } });
+        // chequear que exista la parcela y que este ocupada
+        if (!parcelaF) { throw new NotFoundException(`Parcela no encontrada ${parcelaId}`); }
+        if (!parcelaF.ocupada) { throw new NotFoundException(`Parcela ${parcelaId} no esta ocupada`); }
+
+        // chequear que exista el ingreso
+        const ingresoEnCuestion = await this.repo.findOne({ where: { id: ingresoId }, relations: ['usuario', 'parcela'] })
+        if (!ingresoEnCuestion) throw new NotFoundException(`Ingreso no encontrado ${ingresoId}`)
+
+        const usuarioF = await this.usuario.findOne({ where: { id: usuarioId } });
+
+        // chequear que exista el usuario 
+        if (!usuarioF) throw new NotFoundException('Usuario no encontrado');
+
+        //chequea que la parcela del registro coincida con la ingresada
+        if (ingresoEnCuestion.parcela.id  != parcelaId) {
+            console.log(parcelaId)
+            console.log(ingresoEnCuestion)
+            throw new NotFoundException(
+                `La parcela ${parcelaId} no esta en el registro ${ingresoId}`);
+               
+        }
+
+        //chequea que el usuario del registro coincida con el ingresad
+        if (ingresoEnCuestion.usuario.id != usuarioId) {
+            throw new NotFoundException(
+                `El usuario ${usuarioId} no esta en el registro ${ingresoId}`);
+        }
+
+
+        const salir = (ingresoEnCuestion.usuario.id == usuarioId && ingresoEnCuestion.parcela.id == parcelaId)
+        //const salir = true
+
+        // si hay una desocupacion 
+        if (salir) {
+            //cambiar a false la ocupacion parcela/ocupacion
+            this.parcelaS.desocupar(parcelaId)
+            //cargar la fecha actual en ingresos/salida      
+            this.repo.update(ingresoId, { salida: new Date() })
+        }
+
+        return
+    }
+
+
     async getAll(paginationQuery: PaginationQueryDto): Promise<{
         data: IngresoDto[];
         total: number;
