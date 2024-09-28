@@ -28,12 +28,13 @@ export class IngresosService {
 
     ): Promise<IngresoDto> {
         try {
-
+            // comprueba que exista el usuario 
             const usuarioF = await this.usuario.findOne({ where: { id: usuarioId } })
             if (!usuarioF) throw new NotFoundException('usuario no encontrado')
+            //Comprueba si existe la parcela y que no este ocupada
             const parcelaF = await this.parcela.findOne({ where: { id: parcelaId } })
             if (!parcelaF) throw new NotFoundException('parcela no encontrado')
-            if (parcelaF.ocupada) throw new NotFoundException(`parcela ${parcelaId} en uso`,)
+            if (parcelaF.ocupada) throw new NotFoundException(`parcela ${parcelaId} en uso`)
 
             const ingreso = this.repo.create({
                 //carga usuario
@@ -68,37 +69,35 @@ export class IngresosService {
     ): Promise<IngresoDto> {
 
         const parcelaF = await this.parcela.findOne({ where: { id: parcelaId } });
-        // chequear que exista la parcela y que este ocupada
+        // se fija si existe la parcela y si  esta ocupada
         if (!parcelaF) { throw new NotFoundException(`Parcela no encontrada ${parcelaId}`); }
         if (!parcelaF.ocupada) { throw new NotFoundException(`Parcela ${parcelaId} no esta ocupada`); }
 
-        // chequear que exista el ingreso
-        const ingresoEnCuestion = await this.repo.findOne({ where: { id: ingresoId }, relations: ['usuario', 'parcela'] })
-        if (!ingresoEnCuestion) throw new NotFoundException(`Ingreso no encontrado ${ingresoId}`)
-
+        // comprueba que existe el ingreso de determinado usuario
+        const ingresoE = await this.repo.findOne({ where: { id: ingresoId }, relations: ['usuario', 'parcela'] })
+        if (!ingresoE) throw new NotFoundException(`Ingreso no encontrado ${ingresoId}`)
+        // comprueba que exista el usuario 
         const usuarioF = await this.usuario.findOne({ where: { id: usuarioId } });
-
-        // chequear que exista el usuario 
         if (!usuarioF) throw new NotFoundException('Usuario no encontrado');
 
-        //chequea que la parcela del registro coincida con la ingresada
-        if (ingresoEnCuestion.parcela.id  != parcelaId) {
+        //ve si la parcela en base de datos sea la misma que la ingresada (id)
+        if (ingresoE.parcela.id != parcelaId) {
             console.log(parcelaId)
-            console.log(ingresoEnCuestion)
+            console.log(ingresoE)
             throw new NotFoundException(
                 `La parcela ${parcelaId} no esta en el registro ${ingresoId}`);
-               
+
         }
 
-        //chequea que el usuario del registro coincida con el ingresad
-        if (ingresoEnCuestion.usuario.id != usuarioId) {
+        //chequea que el usuario en base de datos coincida con el ingresado(id)
+        if (ingresoE.usuario.id != usuarioId) {
             throw new NotFoundException(
                 `El usuario ${usuarioId} no esta en el registro ${ingresoId}`);
         }
 
+        // Verifica si el usuario y la parcela del "ingresoEncontrado" coinciden con los IDs proporcionados
+        const salir = (ingresoE.usuario.id == usuarioId && ingresoE.parcela.id == parcelaId)
 
-        const salir = (ingresoEnCuestion.usuario.id == usuarioId && ingresoEnCuestion.parcela.id == parcelaId)
-        //const salir = true
 
         // si hay una desocupacion 
         if (salir) {
@@ -111,7 +110,7 @@ export class IngresosService {
         return
     }
 
-
+    //trae todos los ingresos   
     async getAll(paginationQuery: PaginationQueryDto): Promise<{
         data: IngresoDto[];
         total: number;
@@ -125,6 +124,7 @@ export class IngresosService {
                 take: limit,
             });
             if (!entrada) throw new NotFoundException('User not found');
+
             return { data: entrada, total, page, limit };
         } catch (err) {
             if (err instanceof QueryFailedError)
