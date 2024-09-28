@@ -1,7 +1,8 @@
-import { Body, Controller, Get, HttpStatus, Post, Query, Res } from '@nestjs/common';
+import { Body, Controller, Get, HttpStatus, Param, ParseIntPipe, Patch, Post, Query, Res } from '@nestjs/common';
 import { ReservasService } from './reservas.service';
 import { Response } from 'express';
 import { PaginationQueryDto } from 'src/common';
+import { ReservaDto } from './reservas.dto';
 @Controller('reservas')
 export class ReservasController {
     constructor(private readonly service: ReservasService) { }
@@ -35,6 +36,34 @@ export class ReservasController {
 
     ) {
         return await this.service.getAll(paginationQuery);
+    }
+    @Post(':id/update-reserva')
+    
+    async compareReserva(
+      @Body() reservaDto: Partial<ReservaDto>,
+      @Param('id') id:number,
+      @Res() response: Response
+    ){
+      const result = await this.service.compareEstadoReserva(id, reservaDto);
+      response.status(HttpStatus.CREATED).json({result,msg:'creado con exito'})
+    }
+  
+  
+    @Patch(':id/change-estado')
+    async updateEstadoReserva(
+      @Param('id',ParseIntPipe) id: string,
+      
+      @Body() estado: Partial<ReservaDto>
+    ){
+  
+      try {
+        const result = await this.service.updateEstadoReserva(+id,estado)
+        return result;
+      } catch (error) {
+        console.log(error)
+        return null;
+      }
+     
     }
 
 }
