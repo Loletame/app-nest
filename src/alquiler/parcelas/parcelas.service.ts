@@ -57,7 +57,7 @@ export class ParcelasService {
         skip: (page - 1) * limit,
         take: limit,
       });
-      if (!parcelas) throw new NotFoundException('Parcelas not found');
+      if (!parcelas) throw new NotFoundException('no hay parcelas ');
       return { data: parcelas, total, page, limit };
     } catch (err) {
       if (err instanceof QueryFailedError)
