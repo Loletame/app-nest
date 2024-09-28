@@ -30,12 +30,12 @@ export class ReservasController {
         response.status(HttpStatus.OK).json({ result, msg: 'Reserva solicitada con éxito!' })
         return result;
     }
-    // @Get()
-    // async getAll(@Query() paginationQuery: PaginationQueryDto,
+    @Get()
+    async getAll(@Query() paginationQuery: PaginationQueryDto,
 
-    // ) {
-    //     return await this.service.getAll(paginationQuery);
-    // }
+    ) {
+        return await this.service.getAll(paginationQuery);
+    }
 
 }
 
