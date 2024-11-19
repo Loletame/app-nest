@@ -2,7 +2,7 @@ import { OnModuleInit, UnauthorizedException } from '@nestjs/common';
 import { SubscribeMessage, WebSocketGateway, WebSocketServer, } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
 import { SocketService } from './socket.service';
-import { AuthService } from 'src/usuarios/auth/auth.service';
+import { AuthService } from '../usuarios/auth/auth.service';
 
 @WebSocketGateway()
 export class SocketGateway implements OnModuleInit {

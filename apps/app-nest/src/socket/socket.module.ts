@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { SocketGateway } from './socket.gateway';
 import { SocketService } from './socket.service';
-import { UsuariosModule } from 'src/usuarios/usuarios.module';
+import { UsuariosModule } from '../usuarios/usuarios.module';
 
 @Module({
   providers: [SocketGateway, SocketService],
