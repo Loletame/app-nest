@@ -46,7 +46,7 @@ export class DepartamentosService {
         skip: (page - 1) * limit,
         take: limit,
       });
-      if (!departamento) throw new NotFoundException('Parcelas not found');
+      if (!departamento) throw new NotFoundException('departamento no encontrado');
       return { data: departamento, total, page, limit };
     } catch (err) {
       if (err instanceof QueryFailedError)
@@ -59,7 +59,7 @@ export class DepartamentosService {
     try {
       const departamento = await this.repo.findOne({ where: { id } });
 
-      if (!departamento) throw new NotFoundException('Parcela no encontrada');
+      if (!departamento) throw new NotFoundException('departamento no encontrado');
       return departamento;
     } catch (err) {
       console.error(err);

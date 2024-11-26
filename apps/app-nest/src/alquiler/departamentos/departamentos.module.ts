@@ -5,11 +5,12 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Departamento } from './departamentos.entity';
 import { ClientsModule, Transport } from '@nestjs/microservices';
 import { envs } from '../../configs';
+import { Usuario } from '../../usuarios/usuarios.entity';
 
 
 
 @Module({
-  imports: [ TypeOrmModule.forFeature([Departamento]),
+  imports: [ TypeOrmModule.forFeature([Departamento, Usuario]),
     ClientsModule.register([
       {
         name: 'MAILER',
@@ -23,10 +24,3 @@ import { envs } from '../../configs';
 })
 export class DepartamentosModule{}
 
-
-// @Module({
-//   imports: [TypeOrmModule.forFeature([Departamento])],
-//   controllers: [DepartamentosController],
-//   providers: [DepartamentosService]
-// })
-// export class DepartamentosModule {}
