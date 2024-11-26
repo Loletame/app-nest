@@ -1,4 +1,4 @@
-import { Body, Controller, Get, HttpStatus, Param, ParseIntPipe, Patch, Post, Query, Res } from '@nestjs/common';
+import { Body, Controller, Get, HttpStatus, Headers, Param, ParseIntPipe, Patch, Post, Query, Res } from '@nestjs/common';
 import { ReservasService } from './reservas.service';
 import { Response } from 'express';
 import { PaginationQueryDto } from '../../common';
@@ -47,24 +47,56 @@ export class ReservasController {
       const result = await this.service.compareEstadoReserva(id, reservaDto);
       response.status(HttpStatus.CREATED).json({result,msg:'creado con exito'})
     }
-  
-  
-    @Patch(':id/change-estado')
-    async updateEstadoReserva(
-      @Param('id',ParseIntPipe) id: string,
-      
-      @Body() estado: Partial<ReservaDto>
-    ){
-  
-      try {
-        const result = await this.service.updateEstadoReserva(+id,estado)
-        return result;
-      } catch (error) {
-        console.log(error)
-        return null;
-      }
-     
+    
+    @Patch(':id/aceptar')
+  async acceptReserva(
+    @Param('id', ParseIntPipe) id: number,
+    @Headers('authorization') authorization: string,
+    @Res() response: Response,
+  ) {
+    try {
+      const splitString = authorization.split('Bearer ')[1]; // Bearer ${token}
+      const result = await this.service.acceptRequest(id, splitString);
+      response.status(HttpStatus.OK).json({ ok: true, msg: 'aceptada con exito', result })
+    } catch (error) {
+      return error;
     }
+  }
 
+  @Patch(':id/rechazar')
+  async rejectReserva(
+    @Param('id', ParseIntPipe) id: number,
+    @Headers('authorization') authorization: string,
+    @Res() response: Response,
+  ) {
+    try {
+      const splitString = authorization.split('Bearer ')[1]; // Bearer ${token}
+      const result = await this.service.rejectRequest(id, splitString);
+      response.status(HttpStatus.OK).json({ ok: true, msg: 'rechazaza con exito', result })
+    } catch (error) {
+      return error;
+    }
+  }
 }
+  
+    // @Patch(':id/change-estado')
+    // async updateEstadoReserva(
+    //   @Param('id',ParseIntPipe) id: string,
+      
+    //   @Body() estado: Partial<ReservaDto>
+    // ){
+  
+    //   try {
+    //     const result = await this.service.updateEstadoReserva(+id,estado)
+    //     return result;
+    //   } catch (error) {
+    //     console.log(error)
+    //     return null;
+    //   }
+     
+    // }
+
+
+
+
 

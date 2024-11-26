@@ -1,4 +1,4 @@
-import { IsDate, IsDateString, IsNotEmpty, IsOptional } from "class-validator";
+import { IsDate, IsDateString, IsEnum, IsNotEmpty, IsOptional } from "class-validator";
 import { EstadoReserva } from "./reservas.entity";
 import { UsuarioDto } from "../../usuarios/usuarios.dto";
 import { DepartamentoDto } from "../departamentos/departamentos.dto";
@@ -25,8 +25,12 @@ export class ReservaDto {
     @IsNotEmpty()
     departamento: DepartamentoDto;
 
-    @IsOptional()
-    estado: EstadoReserva = EstadoReserva.PENDIENTE;
+    @IsEnum (
+        EstadoReserva,{
+            message: `solo los estados:${EstadoReserva.APROBADA}/${EstadoReserva.PENDIENTE}/${EstadoReserva.DESAPROBADA} estan permitidos`
+        }
+    )
+    estado: EstadoReserva 
 
     
 

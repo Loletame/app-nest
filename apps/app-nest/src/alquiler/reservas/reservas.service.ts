@@ -1,11 +1,11 @@
 import { BadRequestException, HttpException, HttpStatus, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Departamento } from '../departamentos/departamentos.entity';
-import { QueryFailedError, Repository } from 'typeorm';
+import { In, LessThanOrEqual, MoreThanOrEqual, QueryFailedError, Repository } from 'typeorm';
 import { EstadoReserva, Reserva } from './reservas.entity';
 import { ReservaDto } from './reservas.dto';
 import { DepartamentoDto } from '../departamentos/departamentos.dto';
-import { Usuario } from '../../usuarios/usuarios.entity';
+import { Role, Usuario } from '../../usuarios/usuarios.entity';
 import { UsuarioDto } from '../../usuarios/usuarios.dto';
 import { PaginationQueryDto } from '../../common';
 import { AuthService } from '../../usuarios/auth/auth.service';
@@ -34,9 +34,20 @@ export class ReservasService {
             //Comprueba si existe el departamento 
             const departamentoF = await this.departamento.findOne({ where: { id: departamentoId } });
             if (!departamentoF) throw new NotFoundException('Departamento no encontrado');
+
+            
+
             // Convertimos las fechas string a objetos Date
             const fechaEntradaDate = new Date(fechaEntrada);  // Conversion a Date
             const fechaSalidaDate = new Date(fechaSalida);    // Conversion a Date
+
+            // if (isNaN(fechaEntradaDate.getTime()) || isNaN(fechaSalidaDate.getTime())) {
+            //     throw new BadRequestException('Las fechas deben ser válidas, use el formato AAAA-MM-DD');
+            // }
+            // if ((fechaEntrada.getTime()) > fechaSalidaDate.getTime()) {
+            //     throw new BadRequestException(`la fecha ${fechaEntradaDate} debe ser anterior a ${fechaSalidaDate}`);
+            // }
+            
             const reserva = this.repo.create({
                 //carga usuario
                 usuario: usuarioF,
@@ -47,6 +58,9 @@ export class ReservasService {
                 //carga Date salida
                 salida: fechaSalidaDate
             })
+            
+
+            
             if (reserva) this.repo.save(reserva)
             return;
         } catch (error) {
@@ -59,6 +73,7 @@ export class ReservasService {
             const reservaId = await this.repo.findOne({
                 where: { id }
             })
+            
             if (!reservaId) {
                 return new BadRequestException('no existe tal reserva')
             }
@@ -74,21 +89,81 @@ export class ReservasService {
     }
 
 
-    async updateEstadoReserva(reservaId: number, EstadoReserva: Partial<ReservaDto>) {
+    // async updateEstadoReserva(reservaId: number, EstadoReserva: Partial<ReservaDto>) {
 
+    //     try {
+    //         const reserva = await this.repo.findOne({ where: { id: reservaId } });
+    //         if (!reserva) {
+    //             return new BadRequestException('no existe tal reserva')
+    //         }
+    //         const update = await this.repo.update(reserva, EstadoReserva);
+    //         if (!update) return;
+    //         if (update) return { msg: ` actualizado con exito a ${EstadoReserva.estado}!` };
+    //     } catch (error) {
+    //         console.log(error);
+    //         throw new BadRequestException('error a la hora de registrarse')
+    //     }
+    // }
+
+    async acceptRequest(id: number, token?: string, departamentoId?: number) {
         try {
-            const reserva = await this.repo.findOne({ where: { id: reservaId } });
-            if (!reserva) {
-                return new BadRequestException('no existe tal reserva')
+            const decodedUser = await this.authService.verifyJwt(token);
+            const role: Role = decodedUser.role;
+
+            const reserva = await this.repo.findOne({ where: { id } })
+            if (!reserva) throw new NotFoundException('no encontramos la reserva')
+
+            if (role == Role.ADMIN) {
+                const reserva = await this.repo.findOne({
+                    where: { id },
+                    relations: ['departamento'], // Aseguramos la carga del departamento
+                });
+                console.log(reserva.departamento.id)
+
+                await this.repo.update(reserva, { estado: EstadoReserva.APROBADA });
+                const reservasPendientes = await this.repo.find({
+                    where: {
+                        departamento: { id: reserva.departamento.id }, // Filtra por el mismo departamento
+                        estado: In([EstadoReserva.PENDIENTE]), // Solo reservas pendientes
+                        entrada: LessThanOrEqual(reserva.entrada), // Fechas conflictivas
+                        salida: MoreThanOrEqual(reserva.salida),
+                    },
+                });
+                console.log(reservasPendientes)
+                    for (const reservaPendiente of reservasPendientes) {
+                        await this.repo.update(reservaPendiente.id, { estado: EstadoReserva.DESAPROBADA });
+                    }
+            } else {
+                throw new UnauthorizedException('usted no puede aceptar reservas')
             }
-            const update = await this.repo.update(reserva, EstadoReserva);
-            if (!update) return;
-            if (update) return { msg: ` actualizado con exito a ${EstadoReserva.estado}!` };
+
         } catch (error) {
-            console.log(error);
-            throw new BadRequestException('error a la hora de registrarse')
+            console.error(error);
+            throw new UnauthorizedException('token no valido')
+        }
+        return
+    }
+
+    async rejectRequest(id: number, token?: string, ) {
+        try {
+            const decodedUser = await this.authService.verifyJwt(token);
+            const role: Role = decodedUser.role;
+
+            const reserva = await this.repo.findOne({ where: { id } })
+            if (!reserva) throw new NotFoundException('no encontramos la reserva')
+
+            if (role == Role.ADMIN) {
+                await this.repo.update(reserva, { estado: EstadoReserva.DESAPROBADA });
+            } else {
+                throw new UnauthorizedException('usted no puede aceptar reservas')
+            }
+
+        } catch (error) {
+            console.error(error);
+            throw new UnauthorizedException('token no valido')
         }
     }
+
 
     async getAll(paginationQuery: PaginationQueryDto): Promise<{
         data: ReservaDto[];
