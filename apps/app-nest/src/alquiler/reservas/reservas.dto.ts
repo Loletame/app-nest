@@ -24,6 +24,7 @@ export class ReservaDto {
 
     @IsNotEmpty()
     departamento: DepartamentoDto;
+    
 
     @IsOptional()
     estado: EstadoReserva = EstadoReserva.PENDIENTE;

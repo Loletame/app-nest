@@ -12,18 +12,17 @@ export class JwtMiddleware implements NestMiddleware {
   async use(req: any, res: any, next: () => void) {
     try {
       //* obtenemos el token desde el cabezal (headers) de la peticion, y lo separamos de "Bearer"
-      const tokenArray: string[] = req.headers['authorization'].split(' ');
+      const tokenArray: string[] = req.headers['authorization'].split(' ')
 
-      const decodedToken = await this.authService.verifyJwt(tokenArray[1]);
+      const decodedToken = await this.authService.verifyJwt(tokenArray[1])
 
       if (decodedToken) {
-        const usuario = await this.usuariosService.getOne(decodedToken.sub);
-        if (usuario) next();
-        else throw new UnauthorizedException('Token invalido');
+        const usuario = await this.usuariosService.getOne(decodedToken.sub)
+        if (usuario) next()
+        else throw new UnauthorizedException('Token invalido')
       } else {
-        throw new UnauthorizedException('Token invalido');
+        throw new UnauthorizedException('Token invalido')
       }
-
     } catch (err) {
       console.error(err)
       throw new UnauthorizedException('Token invalido');

@@ -1,5 +1,11 @@
 import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm'
 
+export enum Role {
+    ADMIN = "ADMIN",
+    USER = "USER"
+   
+}
+
 @Entity('usuarios')
 export class Usuario {
     @PrimaryGeneratedColumn('increment')
