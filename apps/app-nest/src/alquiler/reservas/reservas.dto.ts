@@ -33,6 +33,4 @@ export class ReservaDto {
     )
     estado: EstadoReserva 
 
-    
-
 }

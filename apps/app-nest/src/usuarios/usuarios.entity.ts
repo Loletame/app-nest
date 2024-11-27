@@ -5,11 +5,6 @@ export enum Role {
     USER = "USER"
 }
 
-export enum Role {
-    ADMIN = "ADMIN",
-    USER = "USER"
-   
-}
 
 @Entity('usuarios')
 export class Usuario {

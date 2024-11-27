@@ -31,12 +31,17 @@ export class ReservasController {
         response.status(HttpStatus.OK).json({ result, msg: 'Reserva solicitada con éxito!' })
         return result;
     }
-    @Get()
-    async getAll(@Query() paginationQuery: PaginationQueryDto,
+    // @Get()
+    // async getAll(@Query() paginationQuery: PaginationQueryDto,
 
-    ) {
-        return await this.service.getAll(paginationQuery);
-    }
+    // ) {
+    //     return await this.service.getAll(paginationQuery);
+    // }
+    @Get('/')
+  async getAll(@Query() paginationQuery: PaginationQueryDto, @Headers('authorization') authorization: string, @Res() response: Response) {
+    const reservas = await this.service.getAll(paginationQuery);
+    response.status(HttpStatus.OK).json({ ok: true, result: reservas, msg: 'approved' })
+  }
     @Post(':id/update-reserva')
     
     async compareReserva(
