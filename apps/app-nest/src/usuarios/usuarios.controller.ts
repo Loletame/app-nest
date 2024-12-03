@@ -25,9 +25,11 @@ export class UsuariosController {
     async login(
         @Body() usuario: { email: string; password: string },
         @Res() res: Response,
+        
     ) {
         const token = await this.service.login(usuario.email, usuario.password);
-        res.status(HttpStatus.OK).json({ ok: true, result:token, msg: 'approved' })
+        
+        res.status(HttpStatus.OK).json({ ok: true, result: token, msg: 'approved'})
     }
 
     @Patch(':id')
@@ -42,7 +44,7 @@ export class UsuariosController {
     ) {
         console.log(files);
         // res.status(HttpStatus.OK);
-        const result = await this.service.updateUser(id, user, files); [
+        const result = await this.service.updateUser(id, user, files);[
             {
                 fieldname: 'file',
                 originalname: 'test.png',
@@ -61,14 +63,15 @@ export class UsuariosController {
     @Get(':id')
     async getOne(@Param('id') id: number) {
         return await this.service.getOne(id);
+    
     }
 
-    
+
     @Get()
     async getAll(@Query() paginationQuery: PaginationQueryDto) {
         return await this.service.getAll(paginationQuery);
     }
 
     //Experimental
-    
+
 }

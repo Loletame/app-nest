@@ -13,6 +13,7 @@ export  class UsuarioDto {
     @IsString()
     password: string;
     
+    @IsOptional()
     @IsEnum(
         Role,{
             message: `solo roles como ${Role.ADMIN} o ${Role.USER}`

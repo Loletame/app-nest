@@ -14,6 +14,16 @@ export class Parcela {
     //precio parcela
     @Column({ type: 'integer', default:0 })
     precio: number;
+    @Column({ type: 'varchar', nullable: true })
+    lat: string;
+
+    @Column({ type: 'varchar', nullable: true })
+    long: string;
+
+    
+    @Column({ type: 'varchar', nullable: true })
+    imagen: string;
+
 
     @Column ({type: 'boolean', default:false })
     ocupada: boolean;
