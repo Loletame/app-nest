@@ -21,6 +21,7 @@ export class UsuariosService {
             const hash = await this.authService.hashPassword(usuario.password);
             usuario.password = hash;
             const result = await this.repo.save(usuario);
+            console.log(result)
             return result;
 
 

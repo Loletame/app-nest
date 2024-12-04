@@ -9,18 +9,23 @@ async function bootstrap() {
 
   app.enableCors();
   app.use(cors({
-         origin: 'http://localhost:8100', // Allow requests from this origin
-         methods: ['GET', 'POST', 'PUT', 'DELETE'], // Allow these HTTP methods
-         allowedHeaders: ['Content-Type', 'Authorization'] // Allow these headers
-     }));
+    origin: 'http://localhost:8100',  // Allow requests from this origin
+    methods: ['GET', 'POST', 'PUT', 'DELETE'], // Allow these HTTP methods
+    allowedHeaders: ['Content-Type', 'Authorization'] // Allow these headers
+  },
+    {
+      origin: 'http://localhost:8101',  // Allow requests from this origin
+      methods: ['GET', 'POST', 'PUT', 'DELETE'], // Allow these HTTP methods
+      allowedHeaders: ['Content-Type', 'Authorization'] // Allow these headers
+    }));
 
   app.setGlobalPrefix('api');
 
   app.useGlobalPipes(new ValidationPipe({
-    transformOptions: { enableImplicitConversion: true},
+    transformOptions: { enableImplicitConversion: true },
   }),
-);
-  
+  );
+
 
   await app.listen(envs.port);
 }
