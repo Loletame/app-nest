@@ -17,8 +17,9 @@ export class ParcelasController {
     }
     //trae parcela por indice id
     @Get(':id')
-    async getOne(@Param('id') id: number) {
-        return await this.service.getOne(id);
+    async getOne(@Param('id') id: number, @Res() response: Response) {
+        const parcela = await this.service.getOne(id);
+        response.status(HttpStatus.OK).json({ ok:true, result: parcela, msg: 'approved'})
     }
     
 }

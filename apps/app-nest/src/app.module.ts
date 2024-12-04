@@ -48,7 +48,11 @@ export class AppModule implements NestModule {
         {
           path: '/departamentos',
           method: RequestMethod.GET
-        }
+        },
+        {
+          path: '/parcelas/:id',
+          method: RequestMethod.GET
+        },
       )
       .forRoutes('')
   }
