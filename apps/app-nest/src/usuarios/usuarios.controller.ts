@@ -28,8 +28,9 @@ export class UsuariosController {
         
     ) {
         const token = await this.service.login(usuario.email, usuario.password);
+        const userId = await this.service.getOnebyEmail(usuario.email)
         
-        res.status(HttpStatus.OK).json({ ok: true, result: token, msg: 'approved'})
+        res.status(HttpStatus.OK).json({ ok: true, result: token, msg: `${userId.id}`});
     }
 
     @Patch(':id')
