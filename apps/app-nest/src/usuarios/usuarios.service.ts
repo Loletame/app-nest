@@ -123,6 +123,18 @@ export class UsuariosService {
             throw new HttpException(err.message, err.status);
         }
     }
-    //Experimental/testeo
+    async getOnebyEmail(email: string): Promise<UsuarioDto> {
+        try {
+            const usuario = await this.repo.findOne({ where: { email } });
+
+            if (!usuario) throw new NotFoundException('Usuario no encontrado (o no creado)');
+            return usuario;
+        } catch (err) {
+            console.error(err);
+            if (err instanceof QueryFailedError)
+                throw new HttpException(`${err.name} ${err.driverError}`, 404);
+            throw new HttpException(err.message, err.status);
+        }
+    }
 
 }
